@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0F172A">
+<meta name="description" content="Royal Pocket - Offline diary aur kharcha tracker. Sab data aapke phone mein.">
+<title>Royal Pocket</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{--bg:#0F172A;--card:#1E293B;--card2:#334155;--tx:#F1F5F9;--mut:#94A3B8;--gold:#F59E0B;--em:#10B981;--red:#F87171;--line:#334155;--nav:#111827;--in:#0B1220}
+[data-theme="light"]{--bg:#F8FAFC;--card:#FFFFFF;--card2:#E2E8F0;--tx:#0F172A;--mut:#64748B;--gold:#D97706;--em:#059669;--red:#DC2626;--line:#E2E8F0;--nav:#FFFFFF;--in:#F1F5F9}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg)}
+body{color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari",sans-serif;font-size:15px;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+button:disabled{opacity:.5;cursor:not-allowed}
+input,textarea,select{font:inherit;color:inherit;background:var(--in);border:1px solid var(--line);border-radius:12px;padding:12px;width:100%;outline:none}
+input:focus,textarea:focus{border-color:var(--gold)}
+.app{display:flex;flex-direction:column;height:100%;max-width:520px;margin:0 auto}
+.top{display:flex;align-items:center;gap:10px;padding:14px 16px 8px}
+.brand{font-weight:800;font-size:19px;color:var(--gold);flex:1}
+.ib{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:18px;background:var(--card);border:1px solid var(--line)}
+.main{flex:1;overflow-y:auto;padding:4px 16px 16px;-webkit-overflow-scrolling:touch}
+.page{display:none}
+.page.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px}
+.bal{font-size:34px;font-weight:800;margin:4px 0 12px}
+.row2{display:flex;gap:10px}
+.chip{flex:1;border-radius:12px;padding:10px;font-weight:700;font-size:13px}
+.inc{background:rgba(16,185,129,.15);color:var(--em)}
+.exp{background:rgba(248,113,113,.15);color:var(--red)}
+.btn{flex:1;padding:14px;border-radius:14px;font-weight:800;background:var(--gold);color:#111827;text-align:center;display:block}
+.btn2{background:var(--card);border:1px solid var(--gold);color:var(--gold)}
+.btn.sm{padding:8px 12px;flex:0 0 auto;font-size:13px}
+.danger{color:var(--red)!important}
+.gold{color:var(--gold)}
+.muted{color:var(--mut);font-size:12px}
+h3{margin:16px 2px 8px;font-size:15px}
+.item{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--line);margin-bottom:8px}
+.item .t{flex:1;min-width:0}
+.item .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.amt{font-weight:800;white-space:nowrap}
+.small-ic{font-size:16px;padding:6px}
+.nav{display:flex;border-top:1px solid var(--line);background:var(--nav);padding:6px 0 calc(6px + env(safe-area-inset-bottom))}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--mut);padding:4px}
+.nav button.on{color:var(--gold);font-weight:700}
+.nav .ico{font-size:20px}
+.ad{height:50px;margin:6px 16px;border:1px dashed var(--mut);border-radius:10px;display:grid;place-items:center;font-size:12px;color:var(--mut);text-align:center;flex:0 0 auto}
+.moods{display:flex;gap:6px;margin:6px 0 12px}
+.mood{flex:1;font-size:24px;padding:8px 0;border-radius:14px;background:var(--card);border:2px solid transparent}
+.mood.on{border-color:var(--gold)}
+.dater{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.dater input{flex:1;text-align:center}
+.mic{width:76px;height:76px;border-radius:50%;background:radial-gradient(circle,#FBBF24,#F59E0B);display:grid;place-items:center;font-size:30px;margin:10px auto;box-shadow:0 0 22px rgba(245,158,11,.55)}
+.mic.red{background:radial-gradient(circle,#F87171,#DC2626);box-shadow:0 0 22px rgba(248,113,113,.6)}
+.mic.rec{animation:pulse 1.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(245,158,11,.6)}100%{box-shadow:0 0 0 22px rgba(245,158,11,0)}}
+.lock{position:fixed;inset:0;background:#0F172A;color:#F1F5F9;display:none;z-index:50;align-items:center;justify-content:center;padding:20px}
+.lock.on{display:flex}
+.dots{display:flex;justify-content:center;gap:14px;margin:18px 0 0}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid #F59E0B}
+.dots i.on{background:#F59E0B}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.pad button{height:64px;border-radius:50%;background:#1E293B;font-size:24px;font-weight:700;color:#F1F5F9}
+.pad button:active{background:#F59E0B;color:#111}
+.shake{animation:sh .4s}
+@keyframes sh{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:40}
+.modal.on{display:flex}
+.sheet{background:var(--card);color:var(--tx);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:18px;max-height:85vh;overflow:auto}
+.adbox{height:170px;border-radius:14px;background:var(--card2);display:grid;place-items:center;color:var(--mut);text-align:center;font-size:13px}
+.plans{display:flex;gap:10px}
+.plan{flex:1;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.plan.hi{border:2px solid var(--gold)}
+.plan b{font-size:22px}
+.toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%) translateY(20px);background:var(--gold);color:#111;padding:10px 16px;border-radius:12px;font-weight:700;opacity:0;transition:.25s;pointer-events:none;z-index:60;max-width:90%;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.bar{height:10px;border-radius:6px;background:var(--card2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gold)}
+.inrow{display:flex;gap:8px;margin:8px 0}
+#printArea{display:none}
+@media print{html,body{height:auto;overflow:visible;background:#fff}.app,.lock,.modal,.toast{display:none!important}#printArea{display:block!important;color:#000}}
+</style>
+</head>
+<body>
+<div class="lock" id="lock">
+  <div style="width:100%;max-width:320px;text-align:center">
+    <div style="font-size:70px;filter:drop-shadow(0 0 18px rgba(245,158,11,.75))">🛡️</div>
+    <h2 class="gold" style="margin:4px 0 2px">Royal Vault</h2>
+    <div class="muted">Royal Pocket · 100% offline</div>
+    <div id="lkMsg" style="margin:14px 0 0;font-weight:700">PIN daalein</div>
+    <div class="dots" id="dots"><i></i><i></i><i></i><i></i></div>
+    <div class="pad" id="pad"></div>
+    <button class="btn btn2" id="bio" style="width:100%;margin-top:18px">🔐 Fingerprint (web app mein nahi)</button>
+    <button class="muted" id="skipPin" style="margin-top:12px;text-decoration:underline">Abhi PIN nahi — skip karein</button>
+    <button class="muted" id="cancelPin" style="margin-top:12px;text-decoration:underline">Cancel</button>
+  </div>
+</div>
+
+<div class="app">
+  <div class="top">
+    <span class="brand">👑 Royal Pocket</span>
+    <button class="ib" id="thBtn" title="Theme badlein">☀️</button>
+  </div>
+
+  <div class="main" id="main">
+    <!-- HOME -->
+    <section class="page on" id="p-home">
+      <div class="card" style="background:linear-gradient(135deg,#1E293B,#0F172A);border-color:#F59E0B66">
+        <div class="muted">Current Balance (sab entries ka)</div>
+        <div class="bal" id="bal">₹0</div>
+        <div class="row2">
+          <div class="chip inc">⬆ Total Income<br><span id="inc" style="font-size:16px">₹0</span></div>
+          <div class="chip exp">⬇ Total Expense<br><span id="exp" style="font-size:16px">₹0</span></div>
+        </div>
+      </div>
+      <div class="row2" style="margin-bottom:12px">
+        <button class="btn" data-go="diary">+ Write Diary</button>
+        <button class="btn btn2" data-go="cash">+ Log Cash</button>
+      </div>
+      <input id="q" placeholder="🔍 Diary aur kharcha dhoondhein…" style="margin-bottom:4px">
+      <div id="sres"></div>
+      <h3>Recent Activity</h3>
+      <div id="recent"></div>
+    </section>
+
+    <!-- DIARY -->
+    <section class="page" id="p-diary">
+      <div class="dater">
+        <button class="ib" data-shift="-1" aria-label="Pichla din">‹</button>
+        <input type="date" id="dDate">
+        <button class="ib" data-shift="1" aria-label="Agla din">›</button>
+      </div>
+      <div class="moods" id="moods">
+        <button class="mood on" data-m="0">😊</button><button class="mood" data-m="1">💪</button><button class="mood" data-m="2">😔</button><button class="mood" data-m="3">🔥</button><button class="mood" data-m="4">🙏</button>
+      </div>
+      <div class="card">
+        <textarea id="dtext" rows="6" placeholder="Aaj kaisa raha? Likhiye ya mic dabaakar bolein…" style="resize:vertical;border:0;background:transparent;padding:0"></textarea>
+      </div>
+      <div style="text-align:center">
+        <button class="mic" id="dMic" aria-label="Bolkar likhein">🎤</button>
+        <div class="muted" id="dMicMsg">Mic dabaayein aur bolein</div>
+        <select id="dLang" style="width:auto;margin-top:8px"><option value="hi-IN">हिंदी (hi-IN)</option><option value="en-IN">English (en-IN)</option></select>
+      </div>
+      <div class="row2" style="margin:14px 0">
+        <button class="btn" id="dSave">Save</button>
+        <button class="btn btn2" id="dClear">Clear</button>
+      </div>
+      <h3>Is din ki entries</h3>
+      <div id="dlist"></div>
+    </section>
+
+    <!-- CASH -->
+    <section class="page" id="p-cash">
+      <div class="card">
+        <div class="muted">Likhiye ya mic dabakar bolein — jaise "Petrol 200" ya "Salary 5000"</div>
+        <div class="inrow" style="align-items:center">
+          <input id="cIn" placeholder="Petrol 200">
+          <button class="mic red" id="cMic" aria-label="Bolkar entry" style="width:56px;height:56px;font-size:22px;margin:0;flex:0 0 56px">🎙️</button>
+        </div>
+        <button class="btn" id="cAdd">+ Add</button>
+        <div class="muted" id="cMsg" style="margin-top:8px"></div>
+      </div>
+      <div class="card"><b>Is mahine ka kharcha (category)</b><div id="cats" style="margin-top:6px"></div></div>
+      <button class="btn btn2" id="repBtn" style="width:100%;margin-bottom:12px">📄 Export PDF / Print Report</button>
+      <h3>Transactions</h3>
+      <div id="clist"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="page" id="p-settings">
+      <div class="card">
+        <b>🔐 Security</b>
+        <div class="muted" style="margin:4px 0 10px">App band hone ya background mein jaane par PIN lock ho jaata hai.</div>
+        <div class="row2"><button class="btn btn2" id="pinChg">PIN badlein</button><button class="btn btn2" id="pinOff">PIN hatayein</button></div>
+      </div>
+      <div class="card">
+        <b>💾 Backup & Restore</b>
+        <div class="muted" style="margin:4px 0 10px">Data sirf aapke phone mein hai. Backup file zaroor save karein.</div>
+        <div class="row2"><button class="btn" id="bkBtn">Backup (JSON)</button><button class="btn btn2" id="rsBtn">Restore</button></div>
+      </div>
+      <div class="card">
+        <b>👑 Remove Ads</b>
+        <div class="muted" style="margin:4px 0 10px">Ads hatane ka plan: ₹99 lifetime / ₹49 weekly</div>
+        <button class="btn" id="planBtn" style="width:100%">Plans dekhein</button>
+      </div>
+      <div class="card" id="stats"></div>
+      <div class="card muted">Royal Pocket v1.0 · Creator: Royal Rajawat · Koi server nahi, sab data offline.</div>
+    </section>
+  </div>
+
+  <div class="ad" id="ad">📢 Ad space — AdMob banner (sirf native app mein dikhega)</div>
+
+  <nav class="nav">
+    <button class="on" data-p="home"><span class="ico">🏠</span>Home</button>
+    <button data-p="diary"><span class="ico">📖</span>Diary</button>
+    <button data-p="cash"><span class="ico">💰</span>Cash</button>
+    <button data-p="settings"><span class="ico">⚙️</span>Settings</button>
+  </nav>
+</div>
+
+<!-- Rewarded ad (simulated) -->
+<div class="modal" id="mAd"><div class="sheet">
+  <b>📢 Rewarded Ad</b>
+  <div class="muted" style="margin:4px 0 10px">Free users ke liye report download se pehle chhota ad.</div>
+  <div class="adbox">Ad yahan dikhega (AdMob rewarded — native app mein)<br><span id="adCnt" class="gold" style="font-size:28px;font-weight:800;margin-top:8px">5</span></div>
+  <button class="btn" id="adGo" disabled style="width:100%;margin-top:12px">Report Download karein</button>
+  <button class="muted" data-close="mAd" style="width:100%;margin-top:10px;padding:8px">Band karein</button>
+</div></div>
+
+<!-- Plans -->
+<div class="modal" id="mPlans"><div class="sheet">
+  <b>👑 Royal Pro — Remove Ads</b>
+  <div class="plans" style="margin:12px 0">
+    <div class="plan"><b>₹49</b><div class="muted">/ week</div><div style="font-size:12px;margin-top:6px">Ads band</div></div>
+    <div class="plan hi"><b class="gold">₹99</b><div class="muted">lifetime</div><div style="font-size:12px;margin-top:6px">Ads band + report bina ad ke</div></div>
+  </div>
+  <button class="btn btn2" disabled style="width:100%">Payment abhi on nahi hai — jald</button>
+  <p class="muted" style="font-size:12px;line-height:1.5">Abhi koi payment nahi liya jata. Store billing jurne par yahan asli plan on hoga.</p>
+  <button class="muted" data-close="mPlans" style="width:100%;padding:8px">Band karein</button>
+</div></div>
+
+<div class="toast" id="toast"></div>
+<div id="printArea"></div>
+<input type="file" id="restoreFile" accept="application/json,.json" hidden>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const p2=n=>String(n).padStart(2,'0');
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())};
+const shift=(ds,n)=>{const d=new Date(ds+'T00:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const fmt=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MOODS=['😊','💪','😔','🔥','🙏'];
+const LS={
+  get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){toast('Storage bhar gaya ya band hai');return false}},
+  del(k){try{localStorage.removeItem(k)}catch(e){}}
+};
+let diary=LS.get('rp_diary',[]), cash=LS.get('rp_cash',[]);
+if(!Array.isArray(diary))diary=[];
+if(!Array.isArray(cash))cash=[];
+let curPage='home';
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+
+/* ---------- THEME ---------- */
+function applyTheme(t){document.documentElement.dataset.theme=t;$('#thBtn').textContent=t==='light'?'🌙':'☀️';LS.set('rp_theme',t)}
+
+/* ---------- LOCK (PIN) ---------- */
+const lock={mode:'unlock',buf:'',first:null,cancelable:false};
+const hasPin=()=>!!LS.get('rp_pin',null);
+async function hashPin(p){
+  const raw='rp1|'+p;
+  if(window.crypto&&crypto.subtle){
+    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw));
+    return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  }
+  let h=5381;for(let i=0;i<raw.length;i++)h=((h*33)^raw.charCodeAt(i))>>>0;
+  return 'f'+h;
+}
+function lockMsg(){
+  $('#lkMsg').textContent=lock.mode==='unlock'?'PIN daalein':(lock.first===null?'Naya 4-digit PIN banayein':'Wahi PIN phir se daalein');
+}
+function dots(){$$('#dots i').forEach((d,i)=>d.classList.toggle('on',i<lock.buf.length))}
+function showLock(mode,cancelable){
+  lock.mode=mode;lock.buf='';lock.first=null;lock.cancelable=cancelable;
+  $('#lock').classList.add('on');
+  $('#bio').style.display=mode==='unlock'?'':'none';
+  $('#skipPin').style.display=(!cancelable&&mode==='set')?'':'none';
+  $('#cancelPin').style.display=cancelable?'':'none';
+  lockMsg();dots();
+}
+function hideLock(){$('#lock').classList.remove('on')}
+async function press(d){
+  if(d==='del'){lock.buf=lock.buf.slice(0,-1);dots();return}
+  if(lock.buf.length>=4)return;
+  lock.buf+=d;dots();
+  if(lock.buf.length<4)return;
+  const pin=lock.buf;
+  await new Promise(r=>setTimeout(r,150));
+  lock.buf='';dots();
+  if(lock.mode==='unlock'){
+    if(await hashPin(pin)===LS.get('rp_pin',null)){hideLock();return}
+    $('#lkMsg').textContent='Galat PIN, dobara try karein';
+    $('#dots').classList.add('shake');setTimeout(()=>$('#dots').classList.remove('shake'),400);
+    return;
+  }
+  if(lock.first===null){lock.first=pin;lockMsg();return}
+  if(lock.first===pin){
+    LS.set('rp_pin',await hashPin(pin));LS.del('rp_skip');
+    lock.mode='unlock';hideLock();toast('PIN save ho gaya ✅');renderSettings();
+  }else{
+    lock.first=null;toast('PIN match nahi hua, dobara shuru karein');lockMsg();
+  }
+}
+function buildPad(){
+  const keys=['1','2','3','4','5','6','7','8','9','','0','del'];
+  $('#pad').innerHTML=keys.map(k=>k===''?'<span></span>':`<button data-k="${k}" aria-label="${k}">${k==='del'?'⌫':k}</button>`).join('');
+}
+
+/* ---------- NAV ---------- */
+function go(p){
+  curPage=p;
+  $$('.page').forEach(s=>s.classList.toggle('on',s.id==='p-'+p));
+  $$('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+  $('#main').scrollTop=0;
+  ({home:renderHome,diary:renderDiary,cash:renderCash,settings:renderSettings})[p]();
+}
+
+/* ---------- HOME ---------- */
+function totals(){
+  let i=0,e=0;
+  for(const x of cash){if(x.type==='income')i+=x.amount;else e+=x.amount}
+  return{i,e,b:i-e};
+}
+function renderHome(){
+  const t=totals();
+  $('#bal').textContent=fmt(t.b);
+  $('#bal').style.color=t.b<0?'var(--red)':'var(--tx)';
+  $('#inc').textContent=fmt(t.i);
+  $('#exp').textContent=fmt(t.e);
+  const acts=[
+    ...diary.map(x=>({at:x.at||0,ic:MOODS[x.mood]||'📖',t:(x.text||'').slice(0,30)||'Diary',s:x.date+' · Diary',a:'',c:''})),
+    ...cash.map(x=>({at:x.at||0,ic:x.type==='income'?'💵':'💸',t:x.title,s:x.cat+' · '+x.date,a:(x.type==='income'?'+':'-')+fmt(x.amount),c:x.type==='income'?'var(--em)':'var(--red)'}))
+  ].sort((a,b)=>b.at-a.at).slice(0,8);
+  $('#recent').innerHTML=acts.length?acts.map(a=>`<div class="item"><span style="font-size:20px">${a.ic}</span><div class="t"><b>${esc(a.t)}</b><span class="muted">${esc(a.s)}</span></div><span class="amt" style="color:${a.c||'inherit'}">${esc(a.a)}</span></div>`).join('')
+    :'<p class="muted">Abhi kuch nahi. "Write Diary" ya "Log Cash" dabayein.</p>';
+  renderSearch();
+}
+
+/* ---------- SEARCH (diary + cash) ---------- */
+function renderSearch(){
+  const q=$('#q').value.trim().toLowerCase(), box=$('#sres');
+  if(!q){box.innerHTML='';return}
+  const d=diary.filter(x=>((x.text||'')+' '+x.date).toLowerCase().includes(q)).slice(0,20);
+  const c=cash.filter(x=>(x.title+' '+x.cat+' '+x.date).toLowerCase().includes(q)).slice(0,20);
+  box.innerHTML=`<h3>Diary (${d.length})</h3>`+
+    (d.map(x=>`<div class="item" data-sd="${x.id}" style="cursor:pointer"><span style="font-size:20px">${MOODS[x.mood]||'📖'}</span><div class="t"><b>${esc((x.text||'').slice(0,40))}</b><span class="muted">${x.date}</span></div></div>`).join('')||'<p class="muted">Koi diary entry nahi mili</p>')+
+    `<h3>Kharcha / Kamai (${c.length})</h3>`+
+    (c.map(x=>`<div class="item"><span style="font-size:20px">${x.type==='income'?'💵':'💸'}</span><div class="t"><b>${esc(x.title)}</b><span class="muted">${esc(x.cat)} · ${x.date}</span></div><span class="amt" style="color:${x.type==='income'?'var(--em)':'var(--red)'}">${x.type==='income'?'+':'-'}${fmt(x.amount)}</span></div>`).join('')||'<p class="muted">Koi entry nahi mili</p>');
+}
+
+/* ---------- DIARY ---------- */
+let dDate=today(), dMood=0, dEdit=null, rec=null, crec=null;
+function renderDiary(){
+  $('#dDate').value=dDate;
+  $$('#moods .mood').forEach(b=>b.classList.toggle('on',+b.dataset.m===dMood));
+  $('#dSave').textContent=dEdit?'Update':'Save';
+  const list=diary.filter(x=>x.date===dDate).sort((a,b)=>(b.at||0)-(a.at||0));
+  $('#dlist').innerHTML=list.map(x=>`<div class="card">
+      <div class="row2" style="align-items:center">
+        <span style="font-size:20px">${MOODS[x.mood]||'📖'}</span>
+        <span class="muted" style="flex:1">${new Date(x.at||0).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</span>
+        <button class="btn sm btn2" data-ed="${x.id}">✏️ Edit</button>
+        <button class="btn sm btn2 danger" data-del="${x.id}">🗑️</button>
+      </div>
+      <p style="white-space:pre-wrap;margin:10px 0 0">${esc(x.text)}</p>
+    </div>`).join('')||'<p class="muted">Is din ki koi entry nahi. Upar likhein ya bolein.</p>';
+}
+function loadEntry(id){
+  const e=diary.find(x=>x.id===id);if(!e)return;
+  dEdit=id;dDate=e.date;dMood=e.mood||0;
+  go('diary');
+  $('#dtext').value=e.text;
+  toast('Edit mode: badal kar Update dabayein');
+}
+function saveDiary(){
+  const text=$('#dtext').value.trim();
+  if(!text){toast('Pehle kuch likhiye ya bolein');return}
+  if(dEdit){
+    const e=diary.find(x=>x.id===dEdit);
+    if(e)Object.assign(e,{text,mood:dMood,date:dDate});
+  }else{
+    diary.push({id:uid(),date:dDate,mood:dMood,text,at:Date.now()});
+  }
+  LS.set('rp_diary',diary);
+  toast(dEdit?'Entry update ho gayi ✅':'Diary save ho gayi ✅');
+  dEdit=null;$('#dtext').value='';renderDiary();
+}
+
+/* ---------- VOICE (Web Speech API) ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function listen(lang,btn,onText,onEnd){
+  if(!SR){toast('Is browser mein voice support nahi. Type karein');return null}
+  const r=new SR();
+  r.lang=lang;r.continuous=true;r.interimResults=true;
+  let fin='';
+  r.onresult=e=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript;
+      if(e.results[i].isFinal)fin+=t+' ';else interim+=t;
+    }
+    onText(fin.trim(),interim.trim());
+  };
+  r.onerror=e=>{
+    if(e.error!=='no-speech'&&e.error!=='aborted')
+      toast(e.error==='not-allowed'||e.error==='service-not-allowed'?'Mic ki permission dein (browser settings)':'Voice error: '+e.error);
+  };
+  r.onend=()=>{btn.classList.remove('rec');onEnd(fin.trim())};
+  try{r.start();btn.classList.add('rec')}catch(e){toast('Mic abhi shuru nahi ho paya');return null}
+  return r;
+}
+
+/* ---------- CASH ---------- */
+const INC_RE=/salary|income|kamai|mila|mile|received|aaya|aaye|सैलरी|आय|कमाई|मिला|मिले/i;
+const CATS=[
+  ['Travel',/petrol|diesel|fuel|bus|auto|metro|train|uber|ola|cab|ticket|travel|rickshaw|kiraya|पेट्रोल|किराया|टिकट/i],
+  ['Food',/food|lunch|dinner|breakfast|chai|coffee|khana|nasta|snack|swiggy|zomato|tea|नाश्ता|खाना|चाय/i],
+  ['Bills',/bill|bijli|electric|recharge|rent|internet|wifi|gas|water|बिल|बिजली|रिचार्ज|पानी/i],
+  ['Shopping',/shop|cloth|kapda|amazon|flipkart|mall|grocery|sabzi|saman|कपड़े|सामान|सब्ज़ी/i]
+];
+function guessCat(s){const f=CATS.find(([,r])=>r.test(s));return f?f[0]:'Other'}
+// "Petrol 200" -> title "Petrol", amount 200, expense
+function parseCash(s){
+  s=(s||'').trim();if(!s)return null;
+  const m=s.match(/(\d+(?:\.\d+)?)/);if(!m)return null;
+  const amount=parseFloat(m[1]);if(!(amount>0))return null;
+  const type=INC_RE.test(s)?'income':'expense';
+  let t=(s.slice(0,m.index)+' '+s.slice(m.index+m[1].length))
+    .replace(/₹|\b(rs|rupees?|rupaye|rupayen)\b|रुपये|रुपए|रु\.?/gi,' ')
+    .replace(/\s+/g,' ').trim();
+  const title=t?t[0].toUpperCase()+t.slice(1):(type==='income'?'Income':'Kharcha');
+  return{type,title,amount,cat:type==='income'?'Income':guessCat(s)};
+}
+function addFromText(text,fromVoice){
+  const p=parseCash(text);
+  if(!p){
+    $('#cMsg').textContent='Amount nahi mila. Aise likhein: "Petrol 200"';
+    if(!fromVoice)toast('Amount likhein, jaise: Petrol 200');
+    return false;
+  }
+  cash.push({id:uid(),...p,date:today(),at:Date.now()});
+  LS.set('rp_cash',cash);
+  $('#cMsg').textContent=`✅ ${p.title} ${fmt(p.amount)} (${p.type==='income'?'Kamai':'Kharcha'}, ${p.cat}) save hua`;
+  $('#cIn').value='';
+  renderCash();
+  return true;
+}
+function renderCash(){
+  const ym=today().slice(0,7),sum={};
+  cash.forEach(x=>{if(x.type==='expense'&&x.date.startsWith(ym))sum[x.cat]=(sum[x.cat]||0)+x.amount});
+  const tot=Object.values(sum).reduce((a,b)=>a+b,0);
+  $('#cats').innerHTML=tot
+    ?Object.entries(sum).sort((a,b)=>b[1]-a[1]).map(([c,v])=>`<div class="row2" style="margin:10px 0 4px;align-items:center"><span style="flex:1">${esc(c)}</span><b>${fmt(v)}</b><span class="muted">${Math.round(v/tot*100)}%</span></div><div class="bar"><i style="width:${(v/tot*100).toFixed(1)}%"></i></div>`).join('')
+    :'<p class="muted">Is mahine ka koi kharcha nahi.</p>';
+  const list=[...cash].sort((a,b)=>(b.at||0)-(a.at||0));
+  $('#clist').innerHTML=list.map(x=>`<div class="item">
+      <span style="font-size:20px">${x.type==='income'?'💵':'💸'}</span>
+      <div class="t"><b>${esc(x.title)}</b><span class="muted">${esc(x.cat)} · ${x.date}</span></div>
+      <span class="amt" style="color:${x.type==='income'?'var(--em)':'var(--red)'}">${x.type==='income'?'+':'-'}${fmt(x.amount)}</span>
+      <button class="small-ic" data-cdel="${x.id}" aria-label="Delete">🗑️</button>
+    </div>`).join('')||'<p class="muted">Abhi koi entry nahi.</p>';
+}
+
+/* ---------- REPORT (simulated rewarded ad) ---------- */
+let adInt=null;
+function openAd(){
+  $('#mAd').classList.add('on');
+  let n=5;
+  $('#adGo').disabled=true;$('#adCnt').textContent=n;
+  clearInterval(adInt);
+  adInt=setInterval(()=>{
+    n--;
+    if(n>0){$('#adCnt').textContent=n}
+    else{clearInterval(adInt);$('#adCnt').textContent='✓';$('#adGo').disabled=false}
+  },1000);
+}
+function buildReport(){
+  const ym=today().slice(0,7);
+  const rows=cash.filter(x=>x.date.startsWith(ym)).sort((a,b)=>a.date.localeCompare(b.date));
+  const inc=rows.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0);
+  const exp=rows.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0);
+  $('#printArea').innerHTML=`<h2>Royal Pocket — Monthly Report (${ym})</h2>
+    <p>Income: ${fmt(inc)} · Expense: ${fmt(exp)} · Balance: ${fmt(inc-exp)}</p>
+    <table border="1" cellspacing="0" cellpadding="6" style="border-collapse:collapse;width:100%">
+    <tr><th>Date</th><th>Title</th><th>Category</th><th>Type</th><th>Amount</th></tr>
+    ${rows.map(x=>`<tr><td>${x.date}</td><td>${esc(x.title)}</td><td>${esc(x.cat)}</td><td>${x.type==='income'?'Income':'Expense'}</td><td style="text-align:right">${fmt(x.amount)}</td></tr>`).join('')||'<tr><td colspan="5">Is mahine koi entry nahi</td></tr>'}
+    </table>`;
+}
+
+/* ---------- SETTINGS ---------- */
+function renderSettings(){
+  $('#stats').innerHTML=`<b>📊 Data</b><div class="muted" style="margin-top:6px">Diary entries: ${diary.length} · Cash entries: ${cash.length}</div><div class="muted">PIN lock: ${hasPin()?'ON 🔒':'OFF'}</div>`;
+}
+function backup(){
+  const data={app:'RoyalPocket',version:1,savedAt:new Date().toISOString(),diary,cash};
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));
+  a.download='royal-pocket-backup-'+today()+'.json';
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);
+  toast('Backup file download ho rahi hai');
+}
+function restoreFile(f){
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const d=JSON.parse(rd.result);
+      if(d.app!=='RoyalPocket'||!Array.isArray(d.diary)||!Array.isArray(d.cash))throw new Error('bad');
+      const nd=d.diary.filter(x=>x&&x.id&&typeof x.text==='string');
+      const nc=d.cash.filter(x=>x&&x.id&&typeof x.amount==='number');
+      if(!confirm(`Restore karein? Abhi ka data replace ho jayega (Diary ${nd.length}, Cash ${nc.length}).`))return;
+      diary=nd;cash=nc;
+      LS.set('rp_diary',diary);LS.set('rp_cash',cash);
+      toast('Restore ho gaya ✅');go(curPage);
+    }catch(err){toast('Ye Royal Pocket ki sahi backup file nahi hai')}
+  };
+  rd.readAsText(f);
+}
+
+/* ---------- EVENTS ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-ed],[data-del],[data-cdel],[data-sd],[data-go],[data-p],[data-shift]');
+  if(!b)return;
+  const ds=b.dataset;
+  if(ds.p){go(ds.p);return}
+  if(ds.go){
+    go(ds.go);
+    setTimeout(()=>{const el=$(ds.go==='diary'?'#dtext':'#cIn');if(el)el.focus()},200);
+    return;
+  }
+  if(ds.shift){dDate=shift(dDate,+ds.shift);dEdit=null;renderDiary();return}
+  if(ds.ed){loadEntry(ds.ed);return}
+  if(ds.sd){loadEntry(ds.sd);return}
+  if(ds.del){
+    if(confirm('Ye diary entry delete karein?')){
+      diary=diary.filter(x=>x.id!==ds.del);LS.set('rp_diary',diary);
+      toast('Delete ho gaya');renderDiary();
+    }
+    return;
+  }
+  if(ds.cdel){
+    if(confirm('Ye entry delete karein?')){
+      cash=cash.filter(x=>x.id!==ds.cdel);LS.set('rp_cash',cash);
+      toast('Delete ho gaya');renderCash();
+    }
+  }
+});
+
+function wire(){
+  applyTheme(LS.get('rp_theme','dark'));
+  $('#thBtn').onclick=()=>applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
+  buildPad();
+  $('#pad').onclick=e=>{const b=e.target.closest('[data-k]');if(b)press(b.dataset.k)};
+  $('#skipPin').onclick=()=>{LS.set('rp_skip',true);hideLock();toast('PIN ke bina chal raha hai. Settings mein baad mein laga sakte hain')};
+  $('#cancelPin').onclick=hideLock;
+  $('#bio').onclick=()=>toast('Web app mein fingerprint support nahi. PIN daalein');
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden&&hasPin()&&!$('#lock').classList.contains('on'))showLock('unlock',false);
+  });
+
+  $('#q').oninput=renderSearch;
+
+  // Diary
+  $$('#moods .mood').forEach(b=>b.onclick=()=>{dMood=+b.dataset.m;renderDiary()});
+  $('#dDate').onchange=e=>{dDate=e.target.value||today();dEdit=null;renderDiary()};
+  $('#dSave').onclick=saveDiary;
+  $('#dClear').onclick=()=>{$('#dtext').value='';dEdit=null;renderDiary()};
+  $('#dMic').onclick=()=>{
+    if(rec){rec.stop();return}
+    const base=$('#dtext').value.trim();
+    rec=listen($('#dLang').value,$('#dMic'),
+      (f,i)=>{$('#dtext').value=[base,f,i].filter(Boolean).join(' ')},
+      ()=>{rec=null;$('#dMicMsg').textContent='Mic dabaayein aur bolein'});
+    $('#dMicMsg').textContent=rec?'🎙️ Sun raha hun… band karne ke liye dobara dabayein':'Voice support nahi (type karein)';
+  };
+
+  // Cash
+  $('#cAdd').onclick=()=>addFromText($('#cIn').value,false);
+  $('#cIn').addEventListener('keydown',e=>{if(e.key==='Enter')addFromText($('#cIn').value,false)});
+  $('#cMic').onclick=()=>{
+    if(crec){crec.stop();return}
+    crec=listen($('#dLang').value,$('#cMic'),
+      (f,i)=>{$('#cIn').value=[f,i].filter(Boolean).join(' ')},
+      ()=>{crec=null;const v=$('#cIn').value.trim();if(v)addFromText(v,true)});
+  };
+  $('#repBtn').onclick=openAd;
+  $('#adGo').onclick=()=>{$('#mAd').classList.remove('on');buildReport();setTimeout(()=>window.print(),150)};
+
+  // Settings
+  $('#pinChg').onclick=()=>showLock('set',true);
+  $('#pinOff').onclick=()=>{
+    if(!hasPin()){toast('PIN pehle se band hai');return}
+    if(confirm('PIN hata dein? App bina lock ke khulega.')){LS.del('rp_pin');toast('PIN hata diya');renderSettings()}
+  };
+  $('#bkBtn').onclick=backup;
+  $('#rsBtn').onclick=()=>$('#restoreFile').click();
+  $('#restoreFile').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f)restoreFile(f)};
+  $('#planBtn').onclick=()=>$('#mPlans').classList.add('on');
+  $$('[data-close]').forEach(b=>b.onclick=()=>$('#'+b.dataset.close).classList.remove('on'));
+}
+
+/* ---------- INIT ---------- */
+wire();
+go('home');
+if(hasPin())showLock('unlock',false);
+else if(!LS.get('rp_skip',false))showLock('set',false);
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
